@@ -1,5 +1,9 @@
 <% content_for :header, t('.hello_please_sign_in') %>
 
+  <div class='field sign_up'>
+    <%= link_to t('sign_up', :scope => 'refinery.users.new'), new_refinery_user_registration_path, :class => "button" %>
+  </div>
+
 <%= form_for resource, :as => resource_name,
                        :url => refinery.refinery_user_session_path do |f| %>
   <div class='field session_username clearfix'>
@@ -17,6 +21,7 @@
         <%= f.label :remember_me %>
       </div>
     <% end %>
+
     <div class='field forgot_password'>
       <%= link_to t('.forgot_password'), refinery.new_refinery_user_password_path %>
     </div>

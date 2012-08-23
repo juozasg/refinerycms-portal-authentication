@@ -5,21 +5,31 @@ module Refinery
     before_filter :redirect?, :only => [:new, :create]
 
     helper Refinery::Core::Engine.helpers
+    helper_method :refinery_users_exist?
     layout 'refinery/layouts/login'
 
     def new
       @user = User.new
     end
 
+    def show
+      @user = User.find(params[:id])
+    end
+
     # This method should only be used to create the first Refinery user.
     def create
       @user = User.new(params[:user])
+      if !refinery_users_exist?
+        @user.create_first
+      else
+        @user.save
+      end
 
-      if @user.create_first
-        flash[:message] = "<h2>#{t('welcome', :scope => 'refinery.users.create', :who => @user.username).gsub(/\.$/, '')}.</h2>".html_safe
+      if @user.valid?
+        flash[:message] = "<strong>#{t('welcome', :scope => 'refinery.users.create', :who => @user.username).gsub(/\.$/, '')}.</strong>".html_safe
 
         sign_in(@user)
-        redirect_back_or_default(refinery.admin_root_path)
+        redirect_back_or_default(refinery.root_path)
       else
         render :new
       end
@@ -28,11 +38,7 @@ module Refinery
     protected
 
     def redirect?
-      if refinery_user?
-        redirect_to refinery.admin_users_path
-      elsif refinery_users_exist?
-        redirect_to refinery.new_refinery_user_session_path
-      end
+      redirect_to refinery.admin_users_path if refinery_user?
     end
 
     def refinery_users_exist?

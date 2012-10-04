@@ -34,10 +34,12 @@ class CreateRefinerycmsAuthenticationSchema < ActiveRecord::Migration
       t.datetime  :remember_created_at
       t.string    :reset_password_token
       t.datetime  :reset_password_sent_at
-
+      t.confirmable
       t.timestamps
     end
 
     add_index :refinery_users, :id
+    add_index :refinery_users, :confirmation_token, :unique => true
+
   end
 end

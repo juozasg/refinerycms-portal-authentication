@@ -10,11 +10,11 @@ module Refinery
     has_many :plugins, :class_name => "UserPlugin", :order => "position ASC", :dependent => :destroy
     friendly_id :username
 
-    # Include default devise modules. Others available are:
-    # :token_authenticatable, :confirmable, :lockable and :timeoutable
+    # Include some devise modules. Others available are:
+    # :token_authenticatable, :lockable and :timeoutable
     if self.respond_to?(:devise)
       devise :database_authenticatable, :registerable, :recoverable, :rememberable,
-             :trackable, :validatable, :authentication_keys => [:login]
+             :confirmable, :trackable, :validatable, :authentication_keys => [:login]
     end
 
     # Setup accessible (or protected) attributes for your model
@@ -77,6 +77,8 @@ module Refinery
       if valid?
         # first we need to save user
         save
+        # then confirm for devise confirmable
+        confirm!
         # add refinery role
         add_role(:refinery)
         # add superuser role if there are no other users
